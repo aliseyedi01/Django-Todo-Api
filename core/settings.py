@@ -37,10 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # my apps
+    'todo',
     # 3rd apps
     'rest_framework',
-    # my apps
-    'todo'
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,27 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': [
+#         'django_filters.rest_framework.DjangoFilterBackend'
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ],
+# }
+
+# REST_USE_JWT = True
+# JWT_AUTH_COOKIE = 'access'
+# JWT_AUTH_REFRESH_COOKIE = 'refresh'
+
 
 ROOT_URLCONF = 'core.urls'
 

@@ -16,10 +16,11 @@ class CategorySerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'id')
+        # fields = ('username', 'id')
+        fields = ['id', 'username', 'password', 'email']
 
     def to_representation(self, instance):
-        return {'id': instance.id, 'user': instance.username}
+        return {'id': instance.id, 'username': instance.username}
 
 
 class TaskSerializer(ModelSerializer):
