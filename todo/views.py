@@ -26,6 +26,9 @@ class SignUpView(View):
         password = request.POST['password']
         email = request.POST['email']
 
+        if not username or not password or not email:
+            return Response({'error': 'All fields must be provided'}, status=status.HTTP_400_BAD_REQUEST)
+
         # Create a new user
         user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -37,18 +40,12 @@ class SignUpView(View):
 
 class LoginView(APIView):
     @method_decorator(csrf_exempt)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-    def get(self, request):
-        # Handle GET request for signup view (if needed)
-        return HttpResponse("Signup view accessed with GET request")
-
     def post(self, request):
         username = request.POST['username']
         password = request.POST['password']
 
-        print(username, password)
+        if not username or not password:
+            return Response({'error': 'Username and password must be provided'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -86,14 +83,10 @@ class TodoView(APIView):
     # Handle Create Task
     def post(self, request):
         serializer = TaskSerializer(data=request.data)
-        print('after serializer')
         if serializer.is_valid():
-            print('valid data')
             serializer.save()
-            print('valid save')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print('not valid data')
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle Update Task
