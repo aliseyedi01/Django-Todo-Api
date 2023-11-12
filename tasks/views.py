@@ -72,6 +72,7 @@ class TodoView(APIView):
     def delete(self, request, pk):
         try:
             task = Task.objects.get(uuid=pk)
+            print(task)
             task.delete()
             return Response({"Success": "The post was successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:

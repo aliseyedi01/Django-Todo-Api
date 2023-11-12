@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # my apps
-    'todo',
+    'tasks',
     'accounts',
     # 3rd apps
     'rest_framework',
