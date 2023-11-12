@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from django.contrib.auth.models import User
 from .models import Task
 from .models import Category
+from rest_framework import serializers
 
 
 class CategorySerializer(ModelSerializer):

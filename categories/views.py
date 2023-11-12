@@ -1,10 +1,10 @@
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from tasks.models import Category
 from tasks.serializers import CategorySerializer
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 
 
 class CategoryView(APIView):
@@ -24,14 +24,19 @@ class CategoryView(APIView):
             serializer = CategorySerializer(categories, many=True)
             return Response(serializer.data)
 
-    # Handle Create Category
+    # Handle Update Category
     def post(self, request):
-        serializer = CategorySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        name = request.data.get('name')
+        user = request.user
+        if name is not None:
+            # Check for existing category with the same name for the same user
+            if Category.objects.filter(name=name, user=user).exists():
+                return Response({"error": "A category with this name already exists for the user"}, status=status.HTTP_400_BAD_REQUEST)
+            category = Category.objects.create(name=name, user=user)
+            serializer = CategorySerializer(category)
+            return Response({"message": "Category created successfully", "category": serializer.data}, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "name is a required field"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle Update Category
     def put(self, request, pk):
@@ -40,7 +45,7 @@ class CategoryView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({"message": "The category was successfully edited", "category": serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle Remove Category
@@ -48,6 +53,6 @@ class CategoryView(APIView):
         try:
             category = Category.objects.get(uuid=pk)
             category.delete()
-            return Response({"Success": "The category was successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"Success": f"The category with name {category.name} was successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
         except Category.DoesNotExist:
             return Response({"error": f"Category with ID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
