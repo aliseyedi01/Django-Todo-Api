@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     # my apps
     'tasks',
     'accounts',
+    'categories',
     # 3rd apps
     'rest_framework',
     'rest_framework.authtoken',
