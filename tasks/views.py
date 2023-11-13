@@ -10,14 +10,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from accounts.permissions import IsAuthenticatedAndOwner
 # models
 from .models import Task, Category
 from .serializers import TaskSerializer
 
 
 class TodoView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedAndOwner]
 
     # Handle Get Single & All Tasks
     def get(self, request, pk=None):
@@ -29,8 +29,8 @@ class TodoView(APIView):
             except Task.DoesNotExist:
                 return Response({"error": f"Task with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         else:
-            get_tasks = Task.objects.all()
-            serializer = TaskSerializer(get_tasks, many=True)
+            user_tasks = Task.objects.filter(user=request.user)
+            serializer = TaskSerializer(user_tasks, many=True)
             return Response(serializer.data)
 
     # Handle Create Task

@@ -1,14 +1,17 @@
+# drf
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from accounts.permissions import IsAuthenticatedAndOwner
+# django
+from django.contrib.auth.models import User
 from tasks.models import Category
 from tasks.serializers import CategorySerializer
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
 
 
 class CategoryView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedAndOwner]
 
     # Handle Get Single & All Categories
     def get(self, request, pk=None):
@@ -20,8 +23,10 @@ class CategoryView(APIView):
             except Category.DoesNotExist:
                 return Response({"error": f"Category with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
         else:
-            categories = Category.objects.all()
+            categories = Category.objects.filter(user=request.user)
             serializer = CategorySerializer(categories, many=True)
+            # user_tasks = Task.objects.filter(user=request.user)
+            # serializer = TaskSerializer(user_tasks, many=True)
             return Response(serializer.data)
 
     # Handle Update Category

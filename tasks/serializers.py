@@ -8,10 +8,10 @@ from rest_framework import serializers
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name', 'uuid')
+        fields = ('name', 'uuid', 'user')
 
     def to_representation(self, instance):
-        return {'uuid': instance.uuid, 'name': instance.name}
+        return {'uuid': instance.uuid, 'name': instance.name, 'user': instance.user.username}
 
 
 class UserSerializer(ModelSerializer):
