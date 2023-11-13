@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 # drf
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,12 +35,29 @@ class TodoView(APIView):
 
     # Handle Create Task
     def post(self, request):
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        title = request.data.get('title')
+        description = request.data.get('description')
+        category_name = request.data.get('category')
+        completed = request.data.get('completed')
+        user = request.user
+
+        if title is not None and description is not None:
+            try:
+                category = Category.objects.get(name=category_name, user=user)
+            except Category.DoesNotExist:
+                return Response({"error": f"Category with name {category_name} does not exist for the {user.username}."}, status=status.HTTP_404_NOT_FOUND)
+
+            try:
+                existing_task = Task.objects.get(title=title, user=user)
+                return Response({"error": f"A task with {existing_task} title already exists for the {user.username}."}, status=status.HTTP_400_BAD_REQUEST)
+            except Task.DoesNotExist:
+                task = Task.objects.create(
+                    title=title, description=description, category=category, user=user, completed=completed)
+                serializer = TaskSerializer(task)
+                return Response({"message": "Task created successfully", "task": serializer.data}, status=status.HTTP_201_CREATED)
+
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Both title and description are required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Handle Update Task
     def put(self, request, pk):
