@@ -10,11 +10,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from tasks.serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
+# swagger
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+# apps
+from tasks.serializers import UserSerializer
 
 
 class SignUpView(APIView):

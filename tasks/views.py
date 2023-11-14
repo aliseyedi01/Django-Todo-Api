@@ -1,17 +1,21 @@
+# django
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import path
+from django.utils.decorators import method_decorator
+# drf
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+# apps
 from .models import Task, Category
 from .serializers import TaskSerializer
-from drf_yasg.utils import swagger_auto_schema
-from django.views.decorators.csrf import csrf_exempt
 from accounts.permissions import IsAuthenticatedAndOwner
-from django.urls import path
-from django.utils.decorators import method_decorator
+# swagger
+from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
