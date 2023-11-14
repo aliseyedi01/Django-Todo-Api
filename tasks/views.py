@@ -1,39 +1,42 @@
-# django
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
-# drf
+from django.shortcuts import render
+from django.views.decorators.http import require_http_methods
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from accounts.permissions import IsAuthenticatedAndOwner
-# models
 from .models import Task, Category
 from .serializers import TaskSerializer
+from drf_yasg.utils import swagger_auto_schema
+from django.views.decorators.csrf import csrf_exempt
+from accounts.permissions import IsAuthenticatedAndOwner
+from django.urls import path
+from django.utils.decorators import method_decorator
+from drf_yasg import openapi
 
 
-class TodoView(APIView):
+class TodoListView(APIView):
     permission_classes = [IsAuthenticatedAndOwner]
 
-    # Handle Get Single & All Tasks
-    def get(self, request, pk=None):
-        if pk:
-            try:
-                task = Task.objects.get(uuid=pk)
-                serializer = TaskSerializer(task)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            except Task.DoesNotExist:
-                return Response({"error": f"Task with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            user_tasks = Task.objects.filter(user=request.user)
-            serializer = TaskSerializer(user_tasks, many=True)
-            return Response(serializer.data)
+    @swagger_auto_schema(responses={200: TaskSerializer(many=True)})
+    def get(self, request):
+        user_tasks = Task.objects.filter(user=request.user)
+        serializer = TaskSerializer(user_tasks, many=True)
+        return Response(serializer.data)
 
-    # Handle Create Task
+    @swagger_auto_schema(
+        responses={200: TaskSerializer(many=True)},
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'title': openapi.Schema(type=openapi.TYPE_STRING, description='Task title'),
+                'description': openapi.Schema(type=openapi.TYPE_STRING, description='Task description'),
+                'category': openapi.Schema(type=openapi.TYPE_STRING, description='Task category'),
+                'completed': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Task completion status'),
+            },
+            required=['title', 'description', 'category']
+        ),
+    )
     def post(self, request):
         title = request.data.get('title')
         description = request.data.get('description')
@@ -59,7 +62,19 @@ class TodoView(APIView):
         else:
             return Response({"error": "Both title and description are required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Handle Update Task
+
+@method_decorator(csrf_exempt, name='dispatch')
+class TodoDetailView(APIView):
+    permission_classes = [IsAuthenticatedAndOwner]
+
+    def get(self, request, pk):
+        try:
+            task = Task.objects.get(uuid=pk)
+            serializer = TaskSerializer(task)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Task.DoesNotExist:
+            return Response({"error": f"Task with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
+
     def put(self, request, pk):
         task = Task.objects.get(uuid=pk)
         serializer = TaskSerializer(task, data=request.data, partial=True)
@@ -85,7 +100,6 @@ class TodoView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Handle Remove Task
     def delete(self, request, pk):
         try:
             task = Task.objects.get(uuid=pk)
