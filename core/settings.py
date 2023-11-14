@@ -144,8 +144,11 @@ SWAGGER_SETTINGS = {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header',
+            'description': "Enter your bearer token in the format **Bearer &lt;token>**"
         }
     },
-    'USE_SESSION_AUTH': False,  # Disable Django Rest Framework login page
-    'JSON_EDITOR': True,  # Enable JSON editor in Swagger UI
+    'DEFAULT_MODEL_RENDERING': 'example',
+    'EXAMPLES_PROVIDED': True,
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,
 }

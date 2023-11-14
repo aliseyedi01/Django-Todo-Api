@@ -67,6 +67,7 @@ class TodoListView(APIView):
 class TodoDetailView(APIView):
     permission_classes = [IsAuthenticatedAndOwner]
 
+    @swagger_auto_schema(responses={200: TaskSerializer(many=True)})
     def get(self, request, pk):
         try:
             task = Task.objects.get(uuid=pk)
@@ -75,6 +76,7 @@ class TodoDetailView(APIView):
         except Task.DoesNotExist:
             return Response({"error": f"Task with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    @swagger_auto_schema(responses={200: TaskSerializer(many=True)})
     def put(self, request, pk):
         task = Task.objects.get(uuid=pk)
         serializer = TaskSerializer(task, data=request.data, partial=True)
@@ -100,6 +102,7 @@ class TodoDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(responses={200: TaskSerializer(many=True)})
     def delete(self, request, pk):
         try:
             task = Task.objects.get(uuid=pk)

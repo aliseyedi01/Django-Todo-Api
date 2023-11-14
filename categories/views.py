@@ -47,6 +47,7 @@ class CategoryListView(APIView):
 class CategoryDetailView(APIView):
     permission_classes = [IsAuthenticatedAndOwner]
 
+    # @swagger_auto_schema(responses={200: CategorySerializer(many=True)})
     def get(self, request, pk):
         try:
             category = Category.objects.get(uuid=pk)
@@ -55,6 +56,7 @@ class CategoryDetailView(APIView):
         except Category.DoesNotExist:
             return Response({"error": f"Category with UUID {pk} not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    # @swagger_auto_schema(responses={200: CategorySerializer(many=True)})
     def put(self, request, pk):
         category = Category.objects.get(uuid=pk)
         serializer = CategorySerializer(category, data=request.data, partial=True)
@@ -64,6 +66,7 @@ class CategoryDetailView(APIView):
             return Response({"message": "The category was successfully edited", "category": serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # @swagger_auto_schema(responses={200: CategorySerializer(many=True)})
     def delete(self, request, pk):
         try:
             category = Category.objects.get(uuid=pk)
