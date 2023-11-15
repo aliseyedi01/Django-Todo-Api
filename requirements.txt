@@ -8,6 +8,7 @@ gunicorn==21.2.0
 inflection==0.5.1
 packaging==23.2
 PyJWT==2.8.0
+psycopg2==2.9.9
 python-dotenv==0.21.1
 pytz==2023.3.post1
 PyYAML==6.0.1
@@ -15,3 +16,4 @@ sqlparse==0.4.4
 typing_extensions==4.7.1
 tzdata==2023.3
 uritemplate==4.1.1
+
