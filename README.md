@@ -22,11 +22,9 @@ A simple Todo API built with Django and Django Rest Framework.
 
 - **Authentication Endpoints:**
   - User authentication for secure access using JWT (JSON Web Token).
-  - Specify any additional details about authentication-related features
 
 - **Swagger / Redoc Integration:**
   - Integrated Swagger and Redoc for enhanced API documentation.
-  - Provide details about how Swagger and Redoc are used in your project, such as endpoint documentation and testing
 
 ## Technologies Used
 
@@ -72,13 +70,13 @@ A simple Todo API built with Django and Django Rest Framework.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/todo-api.git
+   git clone https://github.com/aliseyedi01/Todo-Api.git
    ```
 
 2. **Navigate to the project directory:**
 
    ```bash
-   cd todo-api
+   cd Todo-Api
    ```
 
 3. **Create a virtual environment:**
